@@ -25,19 +25,6 @@ const getCatById = async (res, catId) => {
   }
 };
 
-// const addCat = async (user, res) => {
-//   try {
-//     console.log('addCat():', cat);
-//     const sql = 'INSERT INTO wop_cat VALUES (null, ?, ?, ?, ?, ?)';
-//     const values = [cat.name, cat.weight, cat.owner, cat.filename, cat.birthdate];
-//     const [result] = await promisePool.query(sql, values);
-//     return result.insertId;
-//   } catch (e) {
-//     console.error("error", e.message);
-//     res.status(500).send(e.message);
-//   }
-// };
-
 const addCat = async (cat, res) => {
   try {
     console.log('addCat():', cat )
@@ -52,15 +39,6 @@ const addCat = async (cat, res) => {
   }
 };
 
-// const deleteCatById = async (res, catId) => {
-//   try {
-//     const [rows] = await promisePool.query("DELECT FROM wop_cat WHERE cat_id = ?", [catId]);
-//     return rows;
-//   } catch (e) {
-//     console.error("error", e.message);
-//     res.status(500).send(e.message);
-//   }
-// };
 
 const deleteCatById = async (catId, res) => {
   try {

@@ -23,14 +23,6 @@ const modifyCat = (req, res) => {
     
 };
 
-// const createCat = async (req, res) => {
-//     const cat = req.body;
-//     cat.filename = req.file.filename;
-//     console.log('Creating an new cat:', cat);
-//     const catId = await catModel.addCat(cat, res);
-//     res.status(201).json({catId});
-// };
-
 const createCat = async (req, res) => {
     const cat = req.body;
     cat.filename=  req.file.filename;
@@ -41,16 +33,6 @@ const createCat = async (req, res) => {
 
 };
 
-
-// const deleteCat = async (req, res) => {
-//     const result = await catModel.deleteCatById(req.params.catId, res);
-//     console.log('cat deleted', result);
-//     if (result.affectedRows > 0) {
-//         res.json({message:'cat deleted'});
-//     } else {
-//         res.status(404).json({message:'cat was already deleted'});
-//     }
-// };
 const deleteCat = async (req, res) => {
     const result = await catModel.deleteCatById(req.params.catId, res);
     console.log('cat deleted', result);
