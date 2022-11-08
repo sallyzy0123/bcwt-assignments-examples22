@@ -3,7 +3,8 @@
 const userModel = require('../models/userModel');
 const users = userModel.users;
 
-const getUsers = (req, res) => {
+const getUsers = async (req, res) => {
+    const users = await userModel.getAllUsers(res);
     // remove the password property from all user items in the array
     users.map(user => {
         delete user.password;
@@ -12,8 +13,8 @@ const getUsers = (req, res) => {
     res.json(users);
 };
 
-const getUser = (req, res) => {
-    const user = users.filter(user => req.params.userId == user.id)[0];
+const getUser = async (req, res) => {
+    const user = await userModel.getUserById(res, req.params.userId);
     if (user) {
         delete user.password;
         res.json(user);
@@ -26,11 +27,11 @@ const modifyUsers = (req, res) => {
     
 };
 
-const createUsers = (req, res) => {
-    // console.log(req.body);
-    const userInfo = `username: ${req.body.name}, email: ${req.body.email}`;
-    res.send('Adding new user ' + userInfo);
-    // 
+const createUsers = async (req, res) => {
+    console.log('Creating an new user:',  req.body);
+    const newUser = req.body;
+    const result = await userModel.addUser(newUser, res);
+    res.status(201).json({userId: result});
 };
 
 const deleteUsers = (req, res) => {
