@@ -8,9 +8,7 @@ const multer = require('multer');
 const upload = multer({ dest: 'uploads/'});
 
 // TODO
-// - Create user routes
-// - Create user controller good
-// - use the data available in userModel.js
+// - chain the router method calls
 
 router.get('/', userController.getUsers);
 router.get('/:userId', userController.getUser);
@@ -19,10 +17,12 @@ router.post('/', upload.single('user'), userController.createUsers);
 
 router.put('/', (req, res) => {
     res.send('From this endpoint you can edit users.')
+    // TODO: replace with controller & data model
   });
   
 router.delete('/', (req, res) => {
     res.send('From this endpoint you can delete users.')
+    // TODO: replace with controller & data model
 });
 
 module.exports = router;

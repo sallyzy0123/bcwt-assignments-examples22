@@ -19,14 +19,22 @@ const getCat = async (req, res) => {
     }
 };
 
-const modifyCat = (req, res) => {
-    
+const modifyCat = async (req, res) => {
+    const cat = req.body;
+    if (req.params.catId){
+        cat.id = req.params.catId;
+    }
+    const result = await catModel.updateCatById(cat, res);
+    if (result.affectedRows > 0){
+        res.json({message: 'cat modified' + cat.id});
+    } else {
+        res.status(404).json({message: 'nothing changed'});
+    }
 };
-
 const createCat = async (req, res) => {
     const cat = req.body;
     cat.filename=  req.file.filename;
-    console.log('creating a new cat', cat);
+    console.log('creating a new cat: ', cat);
 
     const catId = await catModel.addCat(cat, res);
     res.status(201).json({catId});
