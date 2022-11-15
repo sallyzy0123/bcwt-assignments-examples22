@@ -24,12 +24,21 @@ const modifyCat = (req, res) => {
 };
 
 const createCat = async (req, res) => {
-    const cat = req.body;
-    cat.filename=  req.file.filename;
-    console.log('creating a new cat', cat);
-
-    const catId = await catModel.addCat(cat, res);
-    res.status(201).json({catId});
+    
+    const errors = validationResult(req);
+    // TODO: fix empty file validation
+    if (errors.isEmpty() && req.file) {
+        const cat = req.body;
+        cat.filename=  req.file.filename;
+        console.log('creating a new cat', cat);
+        const catId = await catModel.addCat(cat, res);
+        res.status(201).json({message: 'cat created', catId});
+    } else {
+        res.status(400).json({
+            message: 'cat creation failed', 
+            errors: errors.array()
+        });
+    }
 
 };
 
