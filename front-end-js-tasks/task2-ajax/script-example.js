@@ -1,6 +1,6 @@
 'use strict';
-// get reference to DOM elements
 const apiUrl = 'https://api.tvmaze.com/search/shows?q=';
+// get reference to DOM elements
 const form = document.querySelector('#search-form');
 const button = form.querySelector('button');
 const input = form.querySelector('input');
@@ -18,7 +18,6 @@ button.addEventListener('click', (event) => {
     }
 });
 
-
 const renderResults = (data) => {
     // clear existing results before appending new ones
     results.innerHTML = '';
@@ -28,28 +27,9 @@ const renderResults = (data) => {
         h3.textContent = data[i].show.name;
         const img = document.createElement('img');
         img.src = data[i].show.image.medium;
-        const p1 = document.createElement('p');
-        p1.textContent = 'Official site: ' + data[i].show.officialSite;
-        const p2 = document.createElement('p');
-        p2.innerHTML = data[i].show.summary;
-        const p3 = document.createElement('p');
-
-        let text = "";
-        for (let y = 0; y < data[i].show.genres.length; y++) {
-
-            if (y < data[i].show.genres.length - 1) {
-                text = text + data[i].show.genres[y] + ' | ';
-            } else {
-                text = text + data[i].show.genres[y];
-            }
-        }
-        p3.textContent = 'Genre: ' + text;
-
         results.append(h3);
         results.append(img);
-        results.append(p1);
-        results.append(p2);
-        results.append(p3);
+        // TODO: render more data from the results
     }
 };
 
@@ -64,3 +44,8 @@ const getTVSeriesData = async (name) => {
     }
 
 }
+
+// generic event handling example
+document.addEventListener('click', (event) => {
+    console.log('mouth clicked somewhere on the page.', event)
+})
