@@ -2,27 +2,25 @@
 // userRoute
 const express = require('express');
 const router = express.Router();
+const {body, validationResult} = require('express-validator');
 const userController = require('../controllers/userController');
 const multer = require('multer');
 
 const upload = multer({ dest: 'uploads/'});
 
-// TODO
-// - Create user routes
-// - Create user controller good
-// - use the data available in userModel.js
 
-router.get('/', userController.getUsers);
-router.get('/:userId', userController.getUser);
-
-router.post('/', upload.single('user'), userController.createUsers);
-
-router.put('/', (req, res) => {
+router.get('/', userController.getUsers)
+  .get('/:userId', userController.getUser)
+  .post('/', 
+    body('name').isLength({min: 3}),
+    userController.createUsers)
+  .put('/', (req, res) => {
     res.send('From this endpoint you can edit users.')
-  });
-  
-router.delete('/', (req, res) => {
+    // TODO:replace with controller & data model
+  })
+  .delete('/', (req, res) => {
     res.send('From this endpoint you can delete users.')
+    // TODO:replace with controller & data model
 });
 
 module.exports = router;
