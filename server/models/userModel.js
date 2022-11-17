@@ -1,29 +1,28 @@
 'use strict';
-const pool = require("../database/db");
+const pool = require('../database/db');
 const promisePool = pool.promise();
 
-const getAllUsers = async (res,userId) => {
+const getAllUsers = async (res) => {
   try {
-    const sql = 'SELECT * FROM wop_user';
+    const sql = 'SELECT user_id, name, email, role FROM wop_user';
     const [rows] = await promisePool.query(sql);
     return rows;
   } catch (e) {
     console.error("error", e.message);
     res.status(500).send(e.message);
   }
-}
-
-const getUserById = async (res, userId) => {
+};
+const getUserById = async (id, res) => {
   try {
-    const sql = 'SELECT user_id, name, email, role FROM wop_user WHERE user_id =' + userId;
+    const sql = 'SELECT user_id, name, email, role FROM wop_user ' +
+                'WHERE user_id=' + id;
     const [rows] = await promisePool.query(sql);
     return rows[0];
   } catch (e) {
     console.error("error", e.message);
     res.status(500).send(e.message);
   }
-}
-
+};
 const addUser = async (user, res) => {
   try {
     const sql = 'INSERT INTO wop_user VALUES (null, ?, ?, ?, ?)';
@@ -34,11 +33,38 @@ const addUser = async (user, res) => {
     console.error("error", e.message);
     res.status(500).send(e.message);
   }
-}
+};
 
+const deleteUserById = async (userId, res) => {
+  try {
+    const [rows] =
+      await promisePool.query("DELETE FROM wop_user WHERE user_id = ?", [userId]);
+    return rows;
+  } catch (e) {
+    console.error("error", e.message);
+    res.status(500).send(e.message);
+  }
+};
+
+const updateUserById = async (user, res) => {
+  try {
+    console.log('Modify user:', user);
+    const sql = 'UPDATE wop_user SET name = ?, email = ?, password = ?, role = ? ' +
+                'WHERE user_id = ?';
+    const values = [user.name, user.email, user.password, user.role, user.id];
+    const [rows] =
+      await promisePool.query(sql, values);
+    return rows;
+  } catch (e) {
+    console.error("error", e.message);
+    res.status(500).json({'error': e.message});
+  }
+};
 
 module.exports = {
   getAllUsers,
   getUserById,
-  addUser
+  addUser,
+  deleteUserById,
+  updateUserById
 };
