@@ -4,4 +4,4 @@ server/uploads/*
 !server/uploads/.gitkeep
 .env
 .vscode/
-event-task3
+front-end-3-event/*
