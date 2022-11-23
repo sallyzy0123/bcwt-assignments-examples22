@@ -50,7 +50,6 @@ const modifyUser = async(req, res) => {
   }
 };
 
-
 const deleteUser = async (req, res) => {
     const result = await userModel.deleteUserById(req.params.userId, res);
     console.log('user deleted', result);
@@ -61,10 +60,15 @@ const deleteUser = async (req, res) => {
     }
 };
 
+const checkToken = (req, res) => {
+  res.json({user: req.user});
+};
+
 module.exports = {
   getUser,
   getUsers,
   modifyUser,
   createUser,
   deleteUser,
+  checkToken
 };
