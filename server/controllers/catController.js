@@ -42,7 +42,7 @@ const modifyCat = async (req, res) => {
   if (req.params.catId) {
     cat.id = req.params.catId;
   }
-  const result = await catModel.updateCatById(cat, res);
+  const result = await catModel.updateCatById(cat, req.user.user_id, req.user.role, res);
   if (result.affectedRows > 0) {
     res.json({message: 'cat modified: ' + cat.id});
   } else {
@@ -51,13 +51,23 @@ const modifyCat = async (req, res) => {
 };
 
 const deleteCat = async (req, res) => {
-  const result = await catModel.deleteCatById(req.params.catId, req.user.user_id, res);
-  console.log('cat deleted', result)
-  if (result.affectedRows > 0) {
-    res.json({message: 'cat deleted'});
+  const result = await catModel.deleteCatById(req.params.catId, req.user.user_id, req.user.role, res);
+  if (req.user.role == 0) {
+    console.log('cat deleted by admin', result)
+    if (result.affectedRows > 0) {
+      res.json({message: 'cat deleted by admin'});
+    } else {
+      res.status(401).json({message: 'cat deleted failed'});
+    }
   } else {
-    res.status(401).json({message: 'cat deleted failed'});
+    console.log('cat deleted by user', result)
+    if (result.affectedRows > 0) {
+      res.json({message: 'cat deleted'});
+    } else {
+      res.status(401).json({message: 'cat deleted failed'});
+    }
   }
+  
 };
 
 module.exports = {

@@ -75,9 +75,6 @@ const updateUserById = async (user, res) => {
   }
 };
 
-const checkToken = (req, res) => {
-  res.json({user: req.user});
-}
 
 module.exports = {
   getAllUsers,
