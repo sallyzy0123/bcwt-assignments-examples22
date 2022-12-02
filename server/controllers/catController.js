@@ -1,9 +1,15 @@
 'use strict';
 const catModel = require('../models/catModel');
 const {validationResult} = require('express-validator');
+const {makeThumbnail, getCoordinates} = require('../utils/image');
 
 const getCats = async (req, res) => {
   const cats = await catModel.getAllCats(res);
+  cats.map(cat => {
+    // convert birthdate date object to 'YYYY-MM-DD' string format
+    cat.birthdate = cat.birthdate.toISOString().split('T')[0];
+    return cat;
+  });
   res.json(cats);
 };
 
@@ -11,6 +17,8 @@ const getCat = async (req, res) => {
   // choose only one object with matching id
   const cat = await catModel.getCatById(res, req.params.catId);
   if (cat) {
+    // convert date object to 'YYYY-MM-DD' format
+    cat.birthdate = cat.birthdate.toISOString().split('T')[0];
     res.json(cat);
   } else {
     res.sendStatus(404);
@@ -25,6 +33,10 @@ const createCat = async (req, res) => {
   }
   else if (errors.isEmpty()) {
     const cat = req.body;
+    await makeThumbnail(req.file.path, req.file.filename);
+    // TODO: use image.js/getCoord to extract exif-data/gps coords and add
+    // to the cat object as cat.coords property in array format (stringified)
+    cat.coords = JSON.stringify(await getCoordinates(req.file.path));
     cat.owner = req.user.user_id;
     cat.filename = req.file.filename;
     console.log('creating a new cat:', cat);
@@ -39,10 +51,14 @@ const createCat = async (req, res) => {
 
 const modifyCat = async (req, res) => {
   const cat = req.body;
+  const user = req.user;
   if (req.params.catId) {
     cat.id = req.params.catId;
   }
-  const result = await catModel.updateCatById(cat, req.user.user_id, req.user.role, res);
+  //console.log('user', user, 'modifies cat:', cat);
+  const result = await catModel.updateCatById(cat, user, res);
+  // here is different
+  //const result = await catModel.updateCatById(cat, req.user.user_id, req.user.role, res);
   if (result.affectedRows > 0) {
     res.json({message: 'cat modified: ' + cat.id});
   } else {

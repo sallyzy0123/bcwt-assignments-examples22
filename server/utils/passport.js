@@ -2,12 +2,12 @@
 const passport = require('passport');
 const Strategy = require('passport-local').Strategy;
 const passportJWT = require('passport-jwt');
-const JWTStrategy   = passportJWT.Strategy;
+const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
-const { getUserLogin } = require('../models/userModel');
+const bcrypt = require('bcryptjs');
+const {getUserLogin} = require('../models/userModel');
 const dotenv = require('dotenv');
 dotenv.config();
-
 
 // local strategy for username password login
 passport.use(
@@ -15,15 +15,16 @@ passport.use(
     const params = [username];
     try {
       const [user] = await getUserLogin(params);
-      console.log('Local strategy', user); // result is binary row
+      console.log('Local strategy', user);
       if (user === undefined) {
-        return done(null, false, { message: 'Incorrect email.' });
+        return done(null, false, {message: 'Incorrect email.'});
       }
-      if (user.password !== password) {
-        return done(null, false, { message: 'Incorrect password.' });
+      // Hash login password and compare it to the password hash in DB
+      const passwordOK = await bcrypt.compare(password, user.password);
+      if (!passwordOK) {
+        return done(null, false, {message: 'Incorrect password.'});
       }
-      // use spread syntax to create shallow copy to get rid of binary row type
-      return done(null, { ...user }, { message: 'Logged In Successfully' }); 
+      return done(null, user, {message: 'Logged In Successfully'});
     } catch (err) {
       return done(err);
     }
@@ -32,19 +33,16 @@ passport.use(
 
 // JWT strategy for handling bearer token
 passport.use(
-    new JWTStrategy(
-        {
-            jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-            secretOrKey   : process.env.JWT_SECRET,
-        },
-        (jwtPayload, done) => {
-            //find the user in db if needed. 
-            //This functionality may be omitted if you store everything you'll need in JWT payload.
-            return done(null, jwtPayload);
-        }
-    )
+  new JWTStrategy(
+    {
+      jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+      secretOrKey: process.env.JWT_SECRET,
+    },
+    (jwtPayload, done) => {
+      //console.log(jwtPayload);
+      return done(null, jwtPayload);
+    }
+  )
 );
-
-// consider .env for secret, e.g. secretOrKey: process.env.JWT_SECRET
 
 module.exports = passport;

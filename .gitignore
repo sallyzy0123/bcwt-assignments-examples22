@@ -5,3 +5,5 @@ server/uploads/*
 .env
 .vscode/
 front-end-3-event/*
+server/thumbnails/*
+!server/thumbnails/.gitkeep
